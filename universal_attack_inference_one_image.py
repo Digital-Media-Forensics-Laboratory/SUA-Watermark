@@ -54,18 +54,18 @@ def init_Attack(args_attack):
     return pgd_attack, device
 
 if __name__ == "__main__":
-    # 使用标准的 -i 和 -o 参数
-    parser = argparse.ArgumentParser(description='测试单张图片的水印效果')
-    parser.add_argument('-i', '--input', type=str, required=True, help='要测试的图片路径')
-    parser.add_argument('-o', '--output', type=str, default='./canny_results', help='输出目录')
+    # Use standard -i and -o parameters
+    parser = argparse.ArgumentParser(description='Test the watermark effect on a single image')
+    parser.add_argument('-i', '--input', type=str, required=True, help='Path to the image to be tested')
+    parser.add_argument('-o', '--output', type=str, default='./canny_results', help='Output directory')
     args_cmd = parser.parse_args()
     
-    # 创建输出目录
+    # Create output directory
     os.makedirs(args_cmd.output, exist_ok=True)
     
-    # 检查图片是否存在
+    # Check if the image exists
     if not os.path.exists(args_cmd.input):
-        print(f"错误：图片文件不存在 - {args_cmd.input}")
+        print(f"Error: Image file does not exist - {args_cmd.input}")
         sys.exit(1)
     
     args_attack = parse()
@@ -88,34 +88,33 @@ if __name__ == "__main__":
         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
     ])
 
-    # 从命令行参数加载图片
     try:
         image = Image.open(args_cmd.input)
         img = image.convert("RGB")
         img = tf(img).unsqueeze(0).to(device)  # [1, 3, 256, 256]
-        print(f"成功加载图片: {args_cmd.input}")
+        print(f"Successfully loaded image: {args_cmd.input}")
     except Exception as e:
-        print(f"加载图片失败: {e}")
+        print(f"Failed to load image: {e}")
         sys.exit(1)
 
-    # 从图片路径提取文件名（不含扩展名）
+    # Extract filename without extension from image path
     image_name = os.path.splitext(os.path.basename(args_cmd.input))[0]
     
-    print(f"=== 开始使用 {image_name} 测试所有GAN模型 ===")
+    print(f"=== Starting to test all GAN models with {image_name} ===")
 
     # 1. AttGAN inference and evaluating
     print("Testing AttGAN...")
     l1_error, l2_error, min_dist, l0_error = 0.0, 0.0, 0.0, 0.0
     n_dist, n_samples = 0, 0
     
-    # 为图片创建属性标签（假设所有属性都为0）
+    # Create attribute labels for the image (assuming all attributes are 0)
     att_a = torch.zeros(1, attgan_args.n_attrs).to(device)
     att_a = att_a.type(torch.float)
     
     att_b_list = [att_a]
     for i in range(attgan_args.n_attrs):
         tmp = att_a.clone()
-        tmp[:, i] = 1 - tmp[:, i]  # 翻转第i个属性
+        tmp[:, i] = 1 - tmp[:, i]  # Flip the i-th attribute
         tmp = check_attribute_conflict(tmp, attgan_args.attrs[i], attgan_args.attrs)
         att_b_list.append(tmp)
     
@@ -139,16 +138,16 @@ if __name__ == "__main__":
             n_dist += 1
         n_samples += 1
     
-    ############# 保存AttGAN结果 #############
-    # 保存原图
+    ############# Save AttGAN results #############
+    # Save original image
     out_file = f'{args_cmd.output}/{image_name}_AttGAN_original.jpg'
     vutils.save_image(img.cpu(), out_file, nrow=1, normalize=True, value_range=(-1., 1.))
     
     for j in range(len(samples)-2):
-        # 保存对抗样本生成的图片
+        # Save adversarial generated images
         out_file = f'{args_cmd.output}/{image_name}_AttGAN_advgen_{j}.jpg'
         vutils.save_image(samples[j+2].cpu(), out_file, nrow=1, normalize=True, value_range=(-1., 1.))
-        # 保存原图生成的图片
+         # Save original generated images
         out_file = f'{args_cmd.output}/{image_name}_AttGAN_gen_{j}.jpg'
         vutils.save_image(noattack_list[j].cpu(), out_file, nrow=1, normalize=True, value_range=(-1., 1.))
     
@@ -159,7 +158,7 @@ if __name__ == "__main__":
     l1_error, l2_error, min_dist, l0_error = 0.0, 0.0, 0.0, 0.0
     n_dist, n_samples = 0, 0
     
-    # 为StarGAN创建条件
+    # Create conditions for StarGAN
     c_org = torch.zeros(1, solver.c_dim).to(device)
     
     x_noattack_list, x_fake_list = solver.test_universal_model_level(0, img, c_org, pgd_attack.up, args_attack.stargan)
@@ -175,7 +174,7 @@ if __name__ == "__main__":
             n_dist += 1
         n_samples += 1
     
-    ############# 保存StarGAN结果 #############
+    ############# Save StarGAN results #############
     out_file = f'{args_cmd.output}/{image_name}_stargan_original.jpg'
     vutils.save_image(img.cpu(), out_file, nrow=1, normalize=True, value_range=(-1., 1.))
     
@@ -192,7 +191,7 @@ if __name__ == "__main__":
     l1_error, l2_error, min_dist, l0_error = 0.0, 0.0, 0.0, 0.0
     n_dist, n_samples = 0, 0
     
-    # 为AttentionGAN创建条件
+    # Create conditions for AttentionGAN
     c_org_attn = torch.zeros(1, attentiongan_solver.c_dim).to(device)
     
     x_noattack_list, x_fake_list = attentiongan_solver.test_universal_model_level(0, img, c_org_attn, pgd_attack.up, args_attack.AttentionGAN)
@@ -208,7 +207,7 @@ if __name__ == "__main__":
             n_dist += 1
         n_samples += 1
     
-    ############# 保存AttentionGAN结果 #############
+    ############# Save AttentionGAN results #############
     out_file = f'{args_cmd.output}/{image_name}_attentiongan_original.jpg'
     vutils.save_image(img.cpu(), out_file, nrow=1, normalize=True, value_range=(-1., 1.))
     
@@ -257,7 +256,7 @@ if __name__ == "__main__":
             n_dist += 1
         n_samples += 1
 
-        ############# 保存HiSD结果 #############
+        ############# Save HiSD results #############
         out_file = f'{args_cmd.output}/{image_name}_HiSD_original.jpg'
         vutils.save_image(img.cpu(), out_file, nrow=1, normalize=True, value_range=(-1., 1.))
         
@@ -275,5 +274,5 @@ if __name__ == "__main__":
 
     print('HiSD {} images. L1 error: {}. L2 error: {}. prop_dist: {}. L0 error: {}. L_-inf error: {}.'.format(n_samples, l1_error / n_samples, l2_error / n_samples, float(n_dist) / n_samples, l0_error / n_samples, min_dist / n_samples))
 
-    print(f"=== 所有GAN模型在 {image_name} 上的测试完成！ ===")
-    print(f"结果保存在: {args_cmd.output}")
+    print(f"=== Testing of all GAN models on {image_name} completed! ===")
+    print(f"Results saved to: {args_cmd.output}")

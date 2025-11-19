@@ -59,7 +59,6 @@ def init_Attack(args_attack):
 
 pgd_attack = init_Attack(args_attack)
 
-# 载入已有扰动
 # if args_attack.global_settings.universal_perturbation_path:
 #     pgd_attack.up = torch.load(args_attack.global_settings.universal_perturbation_path)
 

@@ -1,0 +1,31 @@
+authorName: HaoHuang
+experimentName: trace
+trialConcurrency: 1
+maxExecDuration: 20h
+maxTrialNum: 1000
+#choice: local, remote, pai
+trainingServicePlatform: local
+searchSpacePath: search_space.json
+#choice: true, false
+useAnnotation: false
+
+tuner:
+  #choice: TPE, Random, Anneal, Evolution, BatchTuner, MetisTuner
+  #SMAC (SMAC should be installed through nnictl)
+  builtinTunerName: TPE
+  # gpuIndices: 0,1
+  
+  classArgs:
+    #choice: maximize, minimize
+    optimize_mode: maximize
+trial:
+  command: CUDA_VISIBLE_DEVICES=1 python3 universal_attack_nni.py
+  codeDir: .
+  gpuNum: 1
+  
+localConfig:
+  maxTrialNumPerGpu: 1
+  useActiveGpu: true
+  # gpuIndices: 0,1
+  
+  

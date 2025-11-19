@@ -82,7 +82,7 @@ python universal_attack_inference_one_image.py -i /path/to/image.jpg -o ./output
 
 ## 🔬 Experimental Results
 
-![pic1](E:\desktop\work\111\pic1.png)
+![pic1](demo.png)
 
 ### 📄 Citation
 
@@ -100,6 +100,7 @@ If you find this work useful, please cite our paper: Scalable Universal Adversar
   keywords={Watermarking;Forgery;Predictive models;Generative adversarial networks;Computational modeling;Perturbation methods;Detectors;GAN forgery model;active defense;adversarial watermark;scalability},
   doi={10.1109/TIFS.2024.3460387}}
 ```
+
 
 
 

@@ -14,21 +14,16 @@ import torch.nn.functional as F
 
 from AttGAN.data import check_attribute_conflict
 
-# *** 改进的CUDA设置 ***
 import gc
 
 def setup_cuda():
-    """更稳定的CUDA设置函数"""
-    # 清理所有缓存
     if torch.cuda.is_available():
         torch.cuda.synchronize()
     torch.cuda.empty_cache()
     gc.collect()
     
-    # 设置设备
     if torch.cuda.is_available():
         try:
-            # 测试CUDA
             test_tensor = torch.tensor([1.0]).cuda()
             device = torch.device('cuda')
             print("✓ CUDA initialized successfully")
@@ -43,9 +38,8 @@ def setup_cuda():
     
     return device
 
-# 设置使用物理GPU
-os.environ['CUDA_VISIBLE_DEVICES'] = '2'
-device = setup_cuda()
+# os.environ['CUDA_VISIBLE_DEVICES'] = '2'
+# device = setup_cuda()
 
 from data import CelebA
 import attacks
@@ -76,15 +70,14 @@ def parse(args=None):
 args_attack = parse()
 print(args_attack)
 
-# 设置扰动文件名
-perturbation_file = '128_8_0.1_StarGAN_0.3*AttentionGAN_1*AttGAN_1.42.pt'
+perturbation_file = '128_8_0.1_StarGAN_0.3*AttentionGAN_1*AttGAN_1.4.pt'
 args_attack.global_settings.universal_perturbation_path = os.path.join(perturbation_dir, perturbation_file)
 
 # init the attacker
 def init_Attack(args_attack):
     pgd_attack = attacks.LinfPGDAttack(
         model=None, 
-        device=device,  # 使用统一的device
+        device=device,  
         epsilon=args_attack.attacks.epsilon, 
         k=args_attack.attacks.k, 
         a=args_attack.attacks.a, 
@@ -99,7 +92,6 @@ def init_Attack(args_attack):
 pgd_attack = init_Attack(args_attack)
 expand_factor = 2
 
-# 初始化新的扰动
 print("Initializing new universal perturbation...")
 pgd_attack.up = torch.zeros((1, 3, 256, 256), device=device)
 # pgd_attack.up = torch.zeros((1, 3, 256, 256), device=device)
@@ -117,7 +109,6 @@ for i in range(1):
             break
         
         try:
-            # 确保使用正确的设备
             img_a = img_a.to(device)
             att_a = att_a.to(device)
             att_a = att_a.type(torch.float)
@@ -133,7 +124,7 @@ for i in range(1):
             # attack attentiongan
             attentiongan_solver.test_universal_model_level_attack(idx, img_a, c_org, pgd_attack)
 
-            # attack HiSD - 添加存在性检查
+            # attack HiSD 
             if all([x is not None for x in [F, T, G, E, reference]]):
                 with torch.no_grad():
                     c = E(img_a)
@@ -168,7 +159,7 @@ for i in range(1):
             # attack_expand
             pgd_attack.universal_perturb_expand_single_step_weight(img_a, gen_models, attack_3m, expand_factor)
 
-            # 保存扰动
+            # save
             torch.save(pgd_attack.up, args_attack.global_settings.universal_perturbation_path)
             print(f'  SUA-Watermark saved to {args_attack.global_settings.universal_perturbation_path}')
 
@@ -176,16 +167,13 @@ for i in range(1):
             print(f"❌ Error at sample {idx}: {type(e).__name__}: {e}")
             import traceback
             traceback.print_exc()
-            # 继续处理下一个样本
             continue
         
-        # 每10个样本清理一次内存
         if idx % 10 == 0 and torch.cuda.is_available():
             torch.cuda.empty_cache()
 
 print('The size of SUA-Watermark: ', pgd_attack.up.shape)
 
-# 最终评估
 print("Starting final evaluation...")
 try:
     evaluate_multiple_models(args_attack, test_dataloader, attgan, attgan_args, solver, attentiongan_solver, transform, F, T, G, E, reference, gen_models, pgd_attack)

@@ -1354,7 +1354,6 @@ class Solver(object):
         # x_concat = torch.cat(x_fake_list, dim=3)
         # result_path = os.path.join(args.compare_output_path, '{}-images.jpg'.format(i+182638))
         # save_image(self.denorm(x_concat.data.cpu()), result_path, nrow=1, padding=0)
-        # # 只保存对抗生成的图片做指标评测
         # for j in range(len(x_fake_list)-2):
         #     result_path = os.path.join(args.details_output_path, '{}-images-{}.jpg'.format(i+182638, j))
         #     save_image(self.denorm(x_fake_list[j+2].data.cpu()), result_path, nrow=1, padding=0)

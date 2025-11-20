@@ -17,9 +17,12 @@ Our watermark is:
 - **Scalable** — adapts to new forgery models without full retraining  
 - **Imperceptible** — visually subtle yet highly robust  
 - **Plug-and-Play** — compatible with any image and ready for practical deployment  
-- **Model-Agnostic** — defends against various attack settings and GAN architectures  
+- **Model-Agnostic** — defends against various attack settings and GAN architectures
+
+  
 ![pic1](imgs/method.png)
 Fig. 1. The pipeline of our proposed SUA watermark defending against facial forgery. Green arrows and frames indicate original images and forged images without disruption; Red arrows and frames indicate the process of watermark injection and disrupted forged images; Purple arrows indicate the watermark inheriting step; Black arrows indicate the defense range of the SUA watermark pj ; White arrows in the defense step indicate the distance between two batches of images is enlarged; on the opposite, White arrows in the constraint step refer to as the reduced distance.
+
 ---
 
 ## 📌 Features 
@@ -90,17 +93,15 @@ Fig. 2. Distortion visualization comparison of different active defense methods,
 If you find this work useful, please cite our paper: Scalable Universal Adversarial Watermark Defending Against Facial Forgery
 
 ```latex
-@ARTICLE{10680120,
+@article{qiao2024scalable,
+  title={Scalable universal adversarial watermark defending against facial forgery},
   author={Qiao, Tong and Zhao, Bin and Shi, Ran and Han, Meng and Hassaballah, Mahmoud and Retraint, Florent and Luo, Xiangyang},
-  journal={IEEE Transactions on Information Forensics and Security}, 
-  title={Scalable Universal Adversarial Watermark Defending Against Facial Forgery}, 
+  journal={IEEE Transactions on Information Forensics and Security},
   year={2024},
-  volume={19},
-  number={},
-  pages={8998-9011},
-  keywords={Watermarking;Forgery;Predictive models;Generative adversarial networks;Computational modeling;Perturbation methods;Detectors;GAN forgery model;active defense;adversarial watermark;scalability},
-  doi={10.1109/TIFS.2024.3460387}}
+  publisher={IEEE}
+}
 ```
+
 
 
 

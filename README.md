@@ -3,7 +3,7 @@
 This repository contains the **official implementation** of the paper:
 
 > **Scalable Universal Adversarial Watermark Defending Against Facial Forgery**  
-> *Authors: [Tong Qiao , Bin Zhao , Ran Shi , Meng Han , Senior Member, IEEE, Mahmoud Hassaballah , Senior Member, IEEE, Florent Retraint , and Xiangyang Luo]*  
+> *Authors: [Tong Qiao , Bin Zhao , Ran Shi , Meng Han , Mahmoud Hassaballah , Florent Retraint , and Xiangyang Luo]*  
 
 ---
 
@@ -18,7 +18,8 @@ Our watermark is:
 - **Imperceptible** — visually subtle yet highly robust  
 - **Plug-and-Play** — compatible with any image and ready for practical deployment  
 - **Model-Agnostic** — defends against various attack settings and GAN architectures  
-
+![pic1](imgs/method.png)
+Fig. 1. The pipeline of our proposed SUA watermark defending against facial forgery. Green arrows and frames indicate original images and forged images without disruption; Red arrows and frames indicate the process of watermark injection and disrupted forged images; Purple arrows indicate the watermark inheriting step; Black arrows indicate the defense range of the SUA watermark pj ; White arrows in the defense step indicate the distance between two batches of images is enlarged; on the opposite, White arrows in the constraint step refer to as the reduced distance.
 ---
 
 ## 📌 Features 
@@ -82,8 +83,8 @@ python universal_attack_inference_one_image.py -i /path/to/image.jpg -o ./output
 
 ## 🔬 Experimental Results
 
-![pic1](demo.png)
-
+![pic2](imgs/demo.png)
+Fig. 2. Distortion visualization comparison of different active defense methods, where the disrupted masks are also compared.
 ### 📄 Citation
 
 If you find this work useful, please cite our paper: Scalable Universal Adversarial Watermark Defending Against Facial Forgery
@@ -100,6 +101,7 @@ If you find this work useful, please cite our paper: Scalable Universal Adversar
   keywords={Watermarking;Forgery;Predictive models;Generative adversarial networks;Computational modeling;Perturbation methods;Detectors;GAN forgery model;active defense;adversarial watermark;scalability},
   doi={10.1109/TIFS.2024.3460387}}
 ```
+
 
 
 
